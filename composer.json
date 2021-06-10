@@ -1,0 +1,66 @@
+{
+    "name": "bhittani/web-browser",
+    "license": "MIT",
+    "description": "A convenience wrapper around laravel/dusk",
+    "keywords": [
+        "web",
+        "browser",
+        "testing",
+        "laravel",
+        "dusk"
+    ],
+    "homepage": "https://github.com/kamalkhan/web-browser",
+    "authors": [
+        {
+            "role": "developer",
+            "name": "Kamal Khan",
+            "email": "shout@bhittani.com",
+            "homepage": "http://bhittani.com"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/kamalkhan/web-browser",
+        "issues": "https://github.com/kamalkhan/web-browser/issues"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bhittani\\WebBrowser\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Bhittani\\WebBrowser\\": "tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "platform": {
+            "php": "7.2.5"
+        }
+    },
+    "require": {
+        "php": ">=7.2",
+        "bhittani/web-driver": "^0.6.0",
+        "laravel/dusk": "^6.15"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "phpunit/phpunit": "^8.5"
+    },
+    "scripts": {
+        "test": "phpunit --colors=always",
+        "cs-fix": "php-cs-fixer fix",
+        "cs-check": "php-cs-fixer fix --dry-run",
+        "install-chrome-driver": "install-chrome-driver",
+        "install-phantomjs-driver": "install-phantomjs-driver",
+        "install-drivers": "install-chrome-driver -q & install-phantomjs-driver -q"
+    }
+}
