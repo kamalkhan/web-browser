@@ -11,6 +11,8 @@ Programmatically navigate/test the web.
     - [Phantomjs](#phantomjs)
 - [API](#api)
     - [Example](#example)
+    - [Testing](#testing)
+        - [PHPUnit](#phpunit)
 - [Changelog](#changelog)
 - [Testing](#testing)
 - [Contributing](#contributing)
@@ -53,7 +55,9 @@ First ensure you have installed the [chrome driver](#install-chrome-driver).
 ```php
 <?php
 
-// Example code...
+use Bhittani\WebBrowser\Chrome;
+
+$browser = new Chrome;
 ```
 
 ### Phantomjs
@@ -63,7 +67,9 @@ First ensure you have installed the [phantomjs driver](#install-phantomjs-driver
 ```php
 <?php
 
-// Example code...
+use Bhittani\WebBrowser\Phantomjs;
+
+$browser = new Phantomjs;
 ```
 
 ## API
@@ -77,6 +83,35 @@ All browser instances extend `Laravel\Dusk\Browser`, hence, the same API applies
 
 $browser->visit('https://example.com')->assertSee('Example');
 ```
+
+### Testing
+
+We can also make assertions and capture failures within a testing environment.
+
+```php
+<?php
+
+use Bhittani\WebBrowser\Browser;
+use Bhittani\WebBrowser\Phantomjs;
+use Bhittani\WebBrowser\Testing;
+
+Testing::bootstrap(); // Required for purging failed assertions.
+
+Browser::test(function ($browser1, $browser2/*, ... */) {
+    $browser1->visit('https://example.com')->assertSee('Example');
+    $browser2->visit('https://example.net')->assertSee('Example');
+});
+
+Phantomjs::test(/*...*/);
+
+Testing::tearDown(); // Required for closing all browsers.
+```
+
+> The above test callback will capture any failed assertions by taking a screenshot, save the console log and the source of a web page that caused the failure.
+
+#### PHPUnit
+
+A `TestCase` class and a `TestTrait` trait under the `Bhittani\WebBrowser` namespace is included for making it easy to write your browser tests using `PHPUnit`.
 
 ## Changelog
 
