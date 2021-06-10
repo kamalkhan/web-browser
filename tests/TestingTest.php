@@ -3,22 +3,9 @@
 namespace Bhittani\WebBrowser;
 
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 
 class TestingTest extends TestCase
 {
-    /** @beforeClass */
-    static function beforeClass()
-    {
-        Testing::bootstrap();
-    }
-
-    /** @afterClass */
-    static function afterClass()
-    {
-        Testing::tearDown();
-    }
-
     /** @test */
     function it_can_test_drive_the_web()
     {
