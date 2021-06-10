@@ -12,7 +12,9 @@
 namespace Bhittani\WebBrowser;
 
 use Bhittani\WebDriver\Chrome as ChromeDriver;
+use Bhittani\WebDriver\Payload\Contract as PayloadContract;
 use Closure;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Laravel\Dusk\Browser as DuskBrowser;
 
 class Browser extends DuskBrowser
@@ -23,12 +25,18 @@ class Browser extends DuskBrowser
     /** @var string */
     protected static $storage;
 
-    /** {@inheritdoc} */
-    public function __construct($driver = null, $resolver = null)
+    /**
+     * {@inheritdoc}
+     *
+     * @param array|PayloadContract|RemoteWebDriver $driverOrOptions
+     */
+    public function __construct($driverOrOptions = [], $resolver = null)
     {
         static::ensureStorageIsAvailable();
 
-        parent::__construct($driver ?: (static::$defaultDriver)::make(), $resolver);
+        [$driver, $options] = static::resolveDriverOrOptions($driverOrOptions);
+
+        parent::__construct($driver ?: static::makeDriver(static::$defaultDriver, $options), $resolver);
     }
 
     public static function test(Closure $fn): void
@@ -61,5 +69,28 @@ class Browser extends DuskBrowser
         static::$storeSourceAt = $path.'/source';
         static::$storeConsoleLogAt = $path.'/console';
         static::$storeScreenshotsAt = $path.'/screenshots';
+    }
+
+    /** @param array|PayloadContract|RemoteWebDriver $driverOrOptions */
+    protected static function resolveDriverOrOptions($driverOrOptions): array
+    {
+        $options = [];
+        $driver = $driverOrOptions;
+
+        if (! $driverOrOptions instanceof RemoteWebDriver) {
+            $driver = null;
+
+            $options = $driverOrOptions instanceof PayloadContract
+                ? $driverOrOptions
+                : (array) $driverOrOptions;
+        }
+
+        return [$driver, $options];
+    }
+
+    /** @param array|PayloadContract $options */
+    protected static function makeDriver(string $class, $options = []): RemoteWebDriver
+    {
+        return $class::make(null, $options);
     }
 }

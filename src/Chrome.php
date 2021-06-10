@@ -15,8 +15,10 @@ use Bhittani\WebDriver\Chrome as Driver;
 
 class Chrome extends Browser
 {
-    public function __construct($driver = null, $resolver = null)
+    /** {@inheritdoc} */
+    public function __construct($driverOrOptions = [], $resolver = null)
     {
-        parent::__construct($driver ?: Driver::make(), $resolver);
+        [$driver, $options] = static::resolveDriverOrOptions($driverOrOptions);
+        parent::__construct($driver ?: static::makeDriver(Driver::class, $options), $resolver);
     }
 }
