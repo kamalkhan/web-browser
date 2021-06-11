@@ -22,6 +22,12 @@ class Browser extends DuskBrowser
     /** @var string */
     public static $defaultDriver = ChromeDriver::class;
 
+    /** @var array */
+    public static $defaultOptions = [];
+
+    /** @var arrray */
+    protected static $initCallbacks = [];
+
     /** @var string */
     protected static $storage;
 
@@ -37,6 +43,15 @@ class Browser extends DuskBrowser
         [$driver, $options] = static::resolveDriverOrOptions($driverOrOptions);
 
         parent::__construct($driver ?: static::makeDriver(static::$defaultDriver, $options), $resolver);
+
+        foreach (static::$initCallbacks as $fn) {
+            $fn($this);
+        }
+    }
+
+    public static function initUsing(callable $fn): void
+    {
+        static::$initCallbacks[] = $fn;
     }
 
     public static function test(Closure $fn): void
@@ -54,6 +69,11 @@ class Browser extends DuskBrowser
     public static function defaultDriver(string $class): void
     {
         static::$defaultDriver = $class;
+    }
+
+    public static function defaultOptions(array $options): void
+    {
+        static::$defaultOptions = $options;
     }
 
     public static function baseUrl(string $url): void
@@ -91,6 +111,10 @@ class Browser extends DuskBrowser
     /** @param array|PayloadContract $options */
     protected static function makeDriver(string $class, $options = []): RemoteWebDriver
     {
+        if (is_array($options)) {
+            $options += static::$defaultOptions;
+        }
+
         return $class::make(null, $options);
     }
 }
