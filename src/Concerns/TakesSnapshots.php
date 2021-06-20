@@ -45,16 +45,17 @@ trait TakesSnapshots
             return $this;
         }
 
-        $tempname = 'failure-'.$name;
+        $tempname = 'temp-'.$name;
         $temppath = rtrim(Browser::$storeScreenshotsAt, '\/').'/'.$tempname.'.png';
 
         $this->screenshot($tempname, $selector);
 
         try {
             Assert::assertEquals(md5_file($temppath), md5_file($filepath));
-            unlink($temppath);
         } catch (ExpectationFailedException $e) {
             Assert::fail("Snapshot mismatch for '{$name}'.");
+        } finally {
+            unlink($temppath);
         }
 
         return $this;
