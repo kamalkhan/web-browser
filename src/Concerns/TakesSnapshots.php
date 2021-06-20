@@ -18,16 +18,27 @@ use PHPUnit\Framework\Warning as WarningException;
 
 trait TakesSnapshots
 {
-    /** @var int|string */
-    public function snapshot($slug, bool $overwrite = false): self
+    /**
+     * @param int|string $slug
+     * @param string|bool $selectorOrOverwrite
+     */
+    public function snapshot($slug, $selectorOrOverwrite = false, bool $overwrite = false): self
     {
+        $selector = null;
+
+        if (is_bool($selectorOrOverwrite)) {
+            $overwrite = $selectorOrOverwrite;
+        } else {
+            $selector = $selectorOrOverwrite;
+        }
+
         $name = rtrim($this->getName().'_'.$slug, '_');
 
         $filename = 'snapshot-'.$name;
         $filepath = rtrim(Browser::$storeScreenshotsAt, '\/').'/'.$filename.'.png';
 
         if (! is_file($filepath) || $overwrite) {
-            $this->screenshot($filename);
+            $this->screenshot($filename, $selector);
 
             throw new WarningException("Snapshot created for '{$name}'.");
 
@@ -37,7 +48,7 @@ trait TakesSnapshots
         $tempname = 'failure-'.$name;
         $temppath = rtrim(Browser::$storeScreenshotsAt, '\/').'/'.$tempname.'.png';
 
-        $this->screenshot($tempname);
+        $this->screenshot($tempname, $selector);
 
         try {
             Assert::assertEquals(md5_file($temppath), md5_file($filepath));

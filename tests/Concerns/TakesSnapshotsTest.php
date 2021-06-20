@@ -13,7 +13,7 @@ class TakesSnapshotsTest extends TestCase
         $browser = new Browser;
 
         $browser->visit('https://example.com')
-            ->snapshot('')
+            ->snapshot('', 'div')
             ->quit();
     }
 }
