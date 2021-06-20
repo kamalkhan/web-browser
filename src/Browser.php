@@ -11,6 +11,7 @@
 
 namespace Bhittani\WebBrowser;
 
+use Bhittani\WebBrowser\Concerns\CanBePaused;
 use Bhittani\WebBrowser\Concerns\TakesSnapshots;
 use Bhittani\WebDriver\Chrome as ChromeDriver;
 use Bhittani\WebDriver\Payload\Contract as PayloadContract;
@@ -20,6 +21,7 @@ use Laravel\Dusk\Browser as DuskBrowser;
 
 class Browser extends DuskBrowser
 {
+    use CanBePaused;
     use TakesSnapshots;
 
     /** @var string */
