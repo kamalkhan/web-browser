@@ -11,6 +11,7 @@
 
 namespace Bhittani\WebBrowser;
 
+use Bhittani\WebBrowser\Concerns\TakesSnapshots;
 use Bhittani\WebDriver\Chrome as ChromeDriver;
 use Bhittani\WebDriver\Payload\Contract as PayloadContract;
 use Closure;
@@ -19,6 +20,8 @@ use Laravel\Dusk\Browser as DuskBrowser;
 
 class Browser extends DuskBrowser
 {
+    use TakesSnapshots;
+
     /** @var string */
     public static $defaultDriver = ChromeDriver::class;
 
@@ -30,6 +33,9 @@ class Browser extends DuskBrowser
 
     /** @var string */
     protected static $storage;
+
+    /** @var string */
+    protected $name;
 
     /**
      * {@inheritdoc}
@@ -45,8 +51,10 @@ class Browser extends DuskBrowser
         parent::__construct($driver ?: static::makeDriver(static::$defaultDriver, $options), $resolver);
 
         foreach (static::$initCallbacks as $fn) {
-            $fn($this);
+            $fn();
         }
+
+        $this->name($this->name ?: Backtrace::caller(1));
     }
 
     public static function initUsing(callable $fn): void
@@ -89,6 +97,18 @@ class Browser extends DuskBrowser
         static::$storeSourceAt = $path.'/source';
         static::$storeConsoleLogAt = $path.'/console';
         static::$storeScreenshotsAt = $path.'/screenshots';
+    }
+
+    public function name(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     /** @param array|PayloadContract|RemoteWebDriver $driverOrOptions */

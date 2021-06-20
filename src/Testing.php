@@ -23,8 +23,11 @@ class Testing
     /** @var string */
     protected $browser;
 
+    /** @var int */
+    protected $backtrace = 1;
+
     /** @var string */
-    protected $callerName = 'unknown';
+    protected $callerName;
 
     public function __construct(string $browser = null)
     {
@@ -56,16 +59,8 @@ class Testing
     /** {@inheritdoc} */
     public function browse(Closure $callback, $backtrace = 0)
     {
-        $trace = debug_backtrace(
-            DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS,
-            $backtrace + 2
-        );
-
-        $calledBy = array_pop($trace);
-
-        if ($calledBy) {
-            $this->callerName = str_replace('\\', '_', $calledBy['class']).'_'.$calledBy['function'];
-        }
+        $this->backtrace = $backtrace + 1;
+        $this->callerName = Backtrace::caller($backtrace + 1);
 
         return $this->browseTrait($callback);
     }
@@ -81,7 +76,7 @@ class Testing
     {
         $class = $this->browser;
 
-        return new $class($driver);
+        return (new $class($driver))->name(Backtrace::caller($this->backtrace + 3));
     }
 
     /** {@inheritdoc} */
